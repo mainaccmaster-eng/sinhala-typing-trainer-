@@ -23,8 +23,8 @@ button.g{background:var(--tint);color:var(--t);width:auto;padding:8px 14px;font-
 .bar{height:8px;background:var(--tint);border-radius:9px;overflow:hidden;margin:10px 0}.bar i{display:block;height:100%;background:var(--p);transition:width .3s}
 #tb i{background:var(--ok);transition:none}
 .tm{font-size:2.2rem;font-weight:700;text-align:center;margin:0;color:var(--t)}
-#sen{font-size:.725rem;line-height:2;background:var(--tint);border-radius:14px;padding:14px 16px;user-select:none;-webkit-user-select:none;margin:10px 0;color:var(--t)}
-#ta{min-height:80px;resize:none;font-size:.6rem}
+#sen{font-size:1rem;line-height:2;background:var(--tint);border-radius:14px;padding:14px 16px;user-select:none;-webkit-user-select:none;margin:10px 0;color:var(--t)}
+#ta{min-height:90px;resize:none;font-size:.85rem}
 #ov{position:fixed;inset:0;background:rgba(10,8,30,.6);display:none;align-items:center;justify-content:center;padding:16px;z-index:9}
 #ov>div{background:var(--c);border-radius:22px;padding:26px 22px;width:min(100%,420px);text-align:center}
 .hid #sen,.hid #ta{visibility:hidden}
@@ -88,7 +88,7 @@ const S=[
 ].sort((a,b)=>a.split(/\s+/).length-b.split(/\s+/).length);
 const $=i=>document.getElementById(i),T=new TextEncoder();
 const ls=(k,v)=>{try{return v===undefined?localStorage.getItem(k):localStorage.setItem(k,v)}catch(e){return null}};
-const nz=t=>t.replace(/[\u200c\u200d]/g,"").replace(/\s+/g," ").trim();
+const nz=t=>t.normalize("NFC").replace(/[\u200b-\u200d\u2060\ufeff\u00ad]/g,"").replace(/\s+/g," ").trim();
 const hex=b=>[...b].map(x=>x.toString(16).padStart(2,"0")).join("");
 const show=i=>{document.querySelectorAll(".card").forEach(c=>c.classList.toggle("on",c.id===i))};
 let name="",code="",lv=0,tot=0,left=0,end=0,paused=false,run=false,iv=null;
@@ -128,7 +128,7 @@ function pause(){if(!run||paused)return;paused=true;left=Math.max(0,end-Date.now
  $("rm").onclick=()=>{end=Date.now()+left;paused=false;cov();$("s4").classList.remove("hid");$("ta").focus()}}
 $("pb").onclick=pause;document.addEventListener("visibilitychange",()=>{if(document.hidden)pause()});
 function submit(){if(!run||paused)return;
- if(nz($("ta").value)!==nz(S[lv])){const m=$("me");m.textContent="වාක්‍යය නිවැරදි නැත. පරීක්ෂා කර නැවත උත්සාහ කරන්න.";m.classList.remove("sh");void m.offsetWidth;m.classList.add("sh");return}
+ if(nz($("ta").value)!==nz(S[lv])){const m=$("me");const a=nz($("ta").value).split(" "),b=nz(S[lv]).split(" ");let i=0;while(i<b.length&&a[i]===b[i])i++;m.textContent=(i<b.length?"වචනය "+(i+1)+" පරීක්ෂා කරන්න. ":"අමතර වචන ඇත. ")+"වාක්‍යය නිවැරදි නැත. පරීක්ෂා කර නැවත උත්සාහ කරන්න.";m.classList.remove("sh");void m.offsetWidth;m.classList.add("sh");return}
  run=false;clearInterval(iv);const used=tot-left,r=used/tot,pc=Math.round(r*100);
  const [c,t]=r<=.5?["var(--ok)","ඔබේ Typing වේගය ඉතාමත් හොඳයි! 🌟"]:r<.75?["var(--wa)","ඔබේ Typing වේගය සාමාන්‍යයි. 👍"]:["var(--er)","ඔබේ Typing වේගය දුර්වලයි. තව පුහුණු වන්න. 💪"];
  const last=lv===49;ov('<h2>✅ නිවැරදියි, '+name+'!</h2><p>ගත වූ කාලය: තත්පර '+(used/1000).toFixed(1)+' / '+(tot/1000)+' ('+pc+'%)</p><p style="color:'+c+';font-weight:700;font-size:1.15rem">'+t+'</p><button id="nx">'+(last?"අවසන් කරන්න 🎉":"ඊළඟ මට්ටමට යන්න ➜")+'</button>');
